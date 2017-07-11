@@ -4,21 +4,24 @@ import (
 	"github.com/galexrt/desktop-helper/pkg/actions"
 )
 
-// ScreenLayout contains options
-type ScreenLayout struct {
+// Action contains options
+type Action struct {
 	actions.Action
 }
 
-func init() {
-	actions.Register("screenlayout", NewScreenLayout())
+type ActionOptions struct {
 }
 
-// NewScreenLayout create new ScreenLayout struct
-func NewScreenLayout() actions.Action {
-	return &ScreenLayout{}
+func init() {
+	actions.Register("screenlayout", New())
+}
+
+// New create new ScreenLayout struct
+func New() actions.Action {
+	return &Action{}
 }
 
 // Run the given options
-func (screenlayout ScreenLayout) Run(config interface{}) error {
+func (action Action) Run(opts interface{}) error {
 	return nil
 }

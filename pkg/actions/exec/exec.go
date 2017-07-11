@@ -1,43 +1,45 @@
 package exec
 
 import (
-	"io/ioutil"
+	"context"
 	"os/exec"
 	"strings"
-
-	"golang.org/x/net/context"
 
 	"github.com/galexrt/desktop-helper/pkg/actions"
 	"github.com/prometheus/common/log"
 )
 
-// ExecAction contains options
-type ExecAction struct {
+// Action contains options
+type Action struct {
 	actions.Action
 }
 
-type ExecActionOptions struct {
+// ActionOptions
+type ActionOptions struct {
 	Command string
 }
 
 func init() {
-	actions.Register("exec", NewExecAction())
+	actions.Register("exec", New())
 }
 
-// NewScreenLayout create new ScreenLayout struct
-func NewExecAction() actions.Action {
-	return &ExecAction{}
+// New create new ScreenLayout struct
+func New() actions.Action {
+	return &Action{}
 }
 
 // Run against the given options
-func (execAction ExecAction) Run(config interface{}) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10)
+func (action Action) Run(opts interface{}) error {
+	options := opts.(ActionOptions)
 	command := []string{"echo", "Hello World!"}
+	ctx, cancel := context.WithTimeout(context.Background(), 10)
+	defer cancel()
 	cmd := exec.CommandContext(ctx, command[0], strings.Join(command[1:], " "))
 	err := cmd.Run()
-	stdout, _ := ioutil.ReadAll(cmd.Stdout)
-	stderr, _ := ioutil.ReadAll(cmd.Stderr)
-	log.With("action", "exec").With("command", options.Command).Debugf("stdout", string(stdout))
-	log.With("action", "exec").With("command", options.Command).Debugf("stderr", string(stderr))
+	if err != nil {
+		return nil
+	}
+	out, err := cmd.CombinedOutput()
+	log.With("action", "exec").With("command", options.Command).Debugf("Output: %+s\n", string(out))
 	return err
 }

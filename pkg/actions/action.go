@@ -11,3 +11,9 @@ var actions = make(map[string]Action)
 func Register(name string, action Action) {
 	actions[name] = action
 }
+
+// Exist check if an action exists by name (key)
+func Exist(name string) bool {
+	_, ok := actions[name]
+	return ok
+}

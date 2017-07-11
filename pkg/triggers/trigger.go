@@ -4,7 +4,7 @@ import "context"
 
 // Trigger contains function to match the given
 type Trigger interface {
-	GetState(context.Context, interface{}) (bool, error)
+	GetState(context.Context, interface{}) (interface{}, error)
 }
 
 var triggers = make(map[string]Trigger)
@@ -14,6 +14,7 @@ func Register(name string, trigger Trigger) {
 	triggers[name] = trigger
 }
 
+// Exist check if a trigger exists by name (key)
 func Exist(name string) bool {
 	_, ok := triggers[name]
 	return ok

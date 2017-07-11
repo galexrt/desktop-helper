@@ -6,21 +6,21 @@ import (
 	"github.com/galexrt/desktop-helper/pkg/triggers"
 )
 
-// Screens contains options
-type Screens struct {
+// Trigger is a simple struct for keeping the current state of the trigger
+type Trigger struct {
 	triggers.Trigger
 }
 
 func init() {
-	triggers.Register("screens", NewScreens())
+	triggers.Register("screens", New())
 }
 
-// NewScreens create new Screens struct
-func NewScreens() triggers.Trigger {
-	return &Screens{}
+// New create new Trigger
+func New() triggers.Trigger {
+	return &Trigger{}
 }
 
-// Match against the given options
-func (screens Screens) GetState(ctx context.Context, config interface{}) (bool, error) {
+// GetState with the given config and return struct
+func (trigger Trigger) GetState(ctx context.Context, config interface{}) (interface{}, error) {
 	return true, nil
 }

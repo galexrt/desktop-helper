@@ -6,21 +6,21 @@ import (
 	"github.com/galexrt/desktop-helper/pkg/triggers"
 )
 
-func init() {
-	triggers.Register("network", NewNetworkTrigger())
-}
-
-// NetworkTrigger contains options
-type NetworkTrigger struct {
+// Trigger is a simple struct for keeping the current state of the trigger
+type Trigger struct {
 	triggers.Trigger
 }
 
-// NewInterfaces create new Interfaces struct
-func NewNetworkTrigger() triggers.Trigger {
-	return &NetworkTrigger{}
+func init() {
+	triggers.Register("network", New())
 }
 
-// Match against the given options
-func (networkTrigger NetworkTrigger) GetState(ctx context.Context, config interface{}) (bool, error) {
+// New create new Trigger
+func New() triggers.Trigger {
+	return &Trigger{}
+}
+
+// GetState with the given config and return struct
+func (trigger Trigger) GetState(ctx context.Context, config interface{}) (interface{}, error) {
 	return true, nil
 }
