@@ -1,6 +1,8 @@
 package screens
 
 import (
+	"context"
+
 	"github.com/galexrt/desktop-helper/pkg/triggers"
 )
 
@@ -19,6 +21,6 @@ func NewScreens() triggers.Trigger {
 }
 
 // Match against the given options
-func (screens Screens) Match(struct{}) (bool, error) {
+func (screens Screens) GetState(ctx context.Context, config interface{}) (bool, error) {
 	return true, nil
 }

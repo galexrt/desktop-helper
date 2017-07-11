@@ -9,43 +9,37 @@ import (
 
 // Config contains the built config
 type Config struct {
-	Version  string             `json:"version"`
-	Profiles []Profile          `json:"profiles"`
-	Triggers map[string]Trigger `json:"triggers"`
+	Version         string             `yaml:"version"`
+	DetectorOptions DetectorOptions    `yaml:"detectorOptions"`
+	Profiles        map[string]Profile `yaml:"profiles"`
+}
+
+// DetectorOptions
+type DetectorOptions struct {
+	PollInterval int64 `yaml:"pollInterval"`
+	Timeout      int64 `yaml:"timeout"`
 }
 
 // Profile contains enable and disable ProfileEvent options
 type Profile struct {
-	Name    string       `json:"name"`
-	Enable  ProfileEvent `json:"on_enable"`
-	Disable ProfileEvent `json:"on_disable"`
-}
-
-// ProfileEvent contains on enable/disable options
-type ProfileEvent struct {
-	Screenlayout string `json:"screenlayout"`
-	Exec         string `json:"exec"`
-}
-
-// Trigger contains a trigger configuration
-type Trigger struct {
-	Network []string `json:"network"`
-	Screens Screens  `json:"screens"`
-}
-
-// Screens contains screens trigger config
-type Screens struct {
-	Count     int      `json:"count"`
-	Connected []string `json:"connected"`
+	Name    string                 `yaml:"name"`
+	Enable  map[string]interface{} `yaml:"on_enable"`
+	Disable map[string]interface{} `yaml:"on_disable"`
+	Trigger map[string]interface{} `yaml:"trigger"`
 }
 
 // Read config file by filename and returns Config
 func Read(filename string) (*Config, error) {
-	config := &Config{}
+	config := &Config{
+		DetectorOptions: DetectorOptions{
+			PollInterval: 3,
+			Timeout:      3,
+		},
+	}
 
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return &Config{}, nil
+		return &Config{}, err
 	}
 
 	if err = yaml.Unmarshal(content, &config); err != nil {
