@@ -3,6 +3,7 @@ package detector
 import (
 	"context"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/galexrt/desktop-helper/pkg/config"
@@ -10,12 +11,14 @@ import (
 	"github.com/prometheus/common/log"
 )
 
+// Detector containing configuration for the detector itself
 type Detector struct {
 	activeTriggers map[string]interface{}
 	checkInterval  time.Duration
 	timeout        time.Duration
 }
 
+// NewDetector creates a new detector
 func NewDetector(config *config.Config) (*Detector, error) {
 	detect := &Detector{
 		activeTriggers: make(map[string]interface{}),
@@ -40,41 +43,53 @@ func NewDetector(config *config.Config) (*Detector, error) {
 		return detect, err
 	}
 	log.With("module", "detector").With("func", "NewDetector").
-		Debugf("config.Options.PollInterval: '%s'\n", detect.checkInterval)
+		Debugf("config.DetectorOptions.PollInterval: '%s'\n", detect.checkInterval)
 	timeout := strconv.FormatInt(config.DetectorOptions.PollInterval, 10)
 	if detect.timeout, err = time.ParseDuration(timeout + "s"); err != nil {
 		return detect, err
 	}
 	log.With("module", "detector").With("func", "NewDetector").
-		Debugf("config.Options.Timeout: '%s'\n", detect.timeout)
+		Debugf("config.DetectorOptions.Timeout: '%s'\n", detect.timeout)
 	return detect, nil
 }
 
-func (detect Detector) Run() {
-	errs := make(chan error, 1)
-	ctx, cancel := context.WithTimeout(context.Background(), detect.timeout)
+// Run run the detector logic
+func (detect Detector) Run(ctx context.Context) error {
 	// TODO Implement check and evaluate logic
-	// 1. Every PollInterval loop over triggers to get the latest state `GetState()`
-	// 2. Evaluate after the loop succeded withtout errors
-	// 2.1. Loop over every profile's conditions
-	// 2.1.1. Match with current states
-	// 2.1.2. If there is a full match, go to exec of on_enable, set state in
+	// 1. DONE - Every PollInterval loop over triggers to get the latest state `GetState()`
+	// 2. WIP - Evaluate after the loop succeded withtout errors
+	// 2.1. WIP - Loop over every profile's conditions
+	// 2.1.1. WIP - Match with current states
+	// 2.1.2. WIP - If there is a full match, go to exec of on_enable, set state in
 	//      global Detector var, return immediately.
-	// 3. Go to step 1
-	var err error
-	go func() {
-		for {
-			err = <-errs
-			log.Errorln(err)
-			cancel()
-		}
-	}()
+	// 3. WIP - Go to step 1
+	wg := sync.WaitGroup{}
 	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+			return ctx.Err()
+		default:
+		}
 		log.With("module", "detector").Debug("Triggers checking ...")
+		wg.Add(1)
 		go func(ctx context.Context) {
-
+			defer wg.Done()
+			// Get the current state
+			// if there is an error
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+			// Evaluate the state
 		}(ctx)
 		log.With("module", "detector").Debug("Triggers checked.")
-		<-time.After(detect.checkInterval)
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+			return ctx.Err()
+		case <-time.After(detect.checkInterval):
+		}
 	}
 }
