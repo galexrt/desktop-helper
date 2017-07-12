@@ -21,6 +21,14 @@ func New() triggers.Trigger {
 }
 
 // GetState with the given config and return struct
-func (trigger Trigger) GetState(ctx context.Context, config interface{}) (interface{}, error) {
-	return true, nil
+func (trigger Trigger) GetState(ctx context.Context, config interface{}) (map[string]interface{}, error) {
+	state := map[string]interface{}{
+		"count": 3,
+		"connected": []string{
+			"DP1-1",
+			"DP1-2",
+			"DP1-3",
+		},
+	}
+	return state, nil
 }

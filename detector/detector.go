@@ -2,6 +2,7 @@ package detector
 
 import (
 	"context"
+	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -16,21 +17,26 @@ type Detector struct {
 	activeTriggers map[string]interface{}
 	checkInterval  time.Duration
 	timeout        time.Duration
+	triggersCache  map[string]triggers.Trigger
+	profiles       map[string]interface{}
 }
 
 // NewDetector creates a new detector
 func NewDetector(config *config.Config) (*Detector, error) {
 	detect := &Detector{
 		activeTriggers: make(map[string]interface{}),
+		triggersCache:  make(map[string]triggers.Trigger),
+		profiles:       make(map[string]interface{}),
 	}
 	for profileName, profile := range config.Profiles {
 		for name, triggerConf := range profile.Trigger {
-			if triggers.Exist(name) {
+			detect.profiles[name] = triggerConf
+			if !triggers.Exist(name) {
 				log.With("module", "detector").With("func", "NewDetector").
 					Fatalf("Given trigger '%s' in profile '%s' does not exist.\n", name, profileName)
 			}
 			if _, ok := detect.activeTriggers[name]; !ok {
-				detect.activeTriggers[name] = triggerConf
+				detect.activeTriggers[name] = struct{}{}
 				log.With("module", "detector").With("func", "NewDetector").
 					Debugf("Trigger added to check list: '%s'\n", name)
 			}
@@ -54,42 +60,103 @@ func NewDetector(config *config.Config) (*Detector, error) {
 }
 
 // Run run the detector logic
-func (detect Detector) Run(ctx context.Context) error {
-	// TODO Implement check and evaluate logic
-	// 1. DONE - Every PollInterval loop over triggers to get the latest state `GetState()`
-	// 2. WIP - Evaluate after the loop succeded withtout errors
-	// 2.1. WIP - Loop over every profile's conditions
-	// 2.1.1. WIP - Match with current states
-	// 2.1.2. WIP - If there is a full match, go to exec of on_enable, set state in
-	//      global Detector var, return immediately.
-	// 3. WIP - Go to step 1
+func (detect Detector) Run(bctx context.Context) error {
 	wg := sync.WaitGroup{}
-	for {
-		select {
-		case <-ctx.Done():
-			wg.Wait()
-			return ctx.Err()
-		default:
-		}
-		log.With("module", "detector").Debug("Triggers checking ...")
-		wg.Add(1)
-		go func(ctx context.Context) {
-			defer wg.Done()
-			// Get the current state
-			// if there is an error
+	ctx, cancel := context.WithCancel(bctx)
+	wg.Add(1)
+	errors := make(chan error)
+	go func() {
+		defer wg.Done()
+		for {
+			log.With("module", "detector").Debug("Triggers checking ...")
+			states, err := detect.getStateFromTriggers(ctx)
+			if err != nil {
+				errors <- err
+				return
+			}
+			err = detect.evaluateStateFromTriggers(states)
+			if err != nil {
+				errors <- err
+				return
+			}
+			log.With("module", "detector").Debug("Triggers checked.")
 			select {
 			case <-ctx.Done():
 				return
-			default:
+			case <-time.After(detect.checkInterval):
 			}
-			// Evaluate the state
-		}(ctx)
-		log.With("module", "detector").Debug("Triggers checked.")
-		select {
-		case <-ctx.Done():
-			wg.Wait()
-			return ctx.Err()
-		case <-time.After(detect.checkInterval):
+		}
+	}()
+
+	var err error
+	err = nil
+	select {
+	case <-ctx.Done():
+		err = ctx.Err()
+	case err = <-errors:
+	}
+	cancel()
+	wg.Wait()
+	return err
+}
+
+func (detect Detector) getStateFromTriggers(ctx context.Context) (map[string]interface{}, error) {
+	wg := sync.WaitGroup{}
+	tctx, cancel := context.WithCancel(ctx)
+	errors := make(chan error)
+	results := make(map[string]interface{})
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var mutex = &sync.Mutex{}
+		// Get the current state of all activeTriggers
+		for triggerName := range detect.activeTriggers {
+			var err error
+			if _, ok := detect.triggersCache[triggerName]; !ok {
+				detect.triggersCache[triggerName] = triggers.Get(triggerName)
+			}
+			wg.Add(1)
+			go func(name string) {
+				defer wg.Done()
+				triggerConf := detect.activeTriggers[name]
+				mutex.Lock()
+				results[name], err = detect.triggersCache[name].GetState(ctx, triggerConf)
+				mutex.Unlock()
+				if err != nil {
+					errors <- err
+				}
+			}(triggerName)
+		}
+	}()
+	wgc := make(chan struct{})
+	go func() {
+		defer close(wgc)
+		wg.Wait()
+	}()
+	var err error
+	select {
+	case err = <-errors:
+	case <-wgc:
+	case <-tctx.Done():
+	case <-ctx.Done():
+	}
+	cancel()
+
+	return results, err
+}
+
+func (detect Detector) evaluateStateFromTriggers(states map[string]interface{}) error {
+	for profile, conf := range detect.profiles {
+		if _, ok := states[profile]; !ok {
+			continue
+		}
+		log.Debugf("state: %+v\n", states[profile])
+		log.Debugf("profile: %+v\n", conf)
+		log.Debugf("state == profile: %+v\n", reflect.DeepEqual(conf, states[profile]))
+		if reflect.DeepEqual(conf, states[profile]) {
+			log.Debugf("Profile '%s' matched with current state.\n", profile)
+			return nil
 		}
 	}
+	return nil
 }

@@ -4,7 +4,7 @@ import "context"
 
 // Trigger contains function to match the given
 type Trigger interface {
-	GetState(context.Context, interface{}) (interface{}, error)
+	GetState(context.Context, interface{}) (map[string]interface{}, error)
 }
 
 var triggers = make(map[string]Trigger)
@@ -20,6 +20,7 @@ func Exist(name string) bool {
 	return ok
 }
 
+// Get
 func Get(name string) Trigger {
 	trigger, _ := triggers[name]
 	return trigger

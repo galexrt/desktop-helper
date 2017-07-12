@@ -10,6 +10,16 @@ import (
 	"github.com/galexrt/desktop-helper/detector"
 	"github.com/galexrt/desktop-helper/pkg/config"
 	"github.com/prometheus/common/log"
+
+	// Actions need to be imported for their init() to becalled and register themselves
+	_ "github.com/galexrt/desktop-helper/pkg/actions/exec"
+	_ "github.com/galexrt/desktop-helper/pkg/actions/screenlayout"
+
+	// Triggers need to be imported for their init() to becalled and register themselves
+	_ "github.com/galexrt/desktop-helper/pkg/triggers/acpid"
+	_ "github.com/galexrt/desktop-helper/pkg/triggers/hosts"
+	_ "github.com/galexrt/desktop-helper/pkg/triggers/network"
+	_ "github.com/galexrt/desktop-helper/pkg/triggers/screens"
 )
 
 var (
