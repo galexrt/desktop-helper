@@ -7,7 +7,7 @@ profiles:
   company-docked-three-monitors:
     on_enable:
       exec:
-        command: "echo Hello World!"
+        command: "/bin/echo Hello World!"
       screenlayout:
         layout: "company-office-three-monitors-special"
     on_disable:
@@ -17,7 +17,8 @@ profiles:
       acpid:
         docked: false
       network:
-        - "enp0s31f6:*"
+        enp0s31f6:
+            ip: "*"
       screens:
         count: 3
         connected:
@@ -27,7 +28,7 @@ profiles:
   company-on-the-go:
     on_enable:
       exec:
-        command: "echo Hello World!"
+        command: "/bin/echo Hello World!"
       screenlayout:
         layout: "company-office-three-monitors-special"
     on_disable:
@@ -37,7 +38,8 @@ profiles:
       acpid:
         docked: true
       network:
-        - "wlp1s0:*"
+        wlp1s0:
+          network_name: "*"
       screens:
         count: 1
         connected:
@@ -45,7 +47,7 @@ profiles:
   home:
     on_enable:
       exec:
-        command: "echo Hello World!"
+        command: "/bin/echo Hello World!"
       screenlayout:
         layout: "home"
     on_disable:
@@ -53,9 +55,10 @@ profiles:
         layout: "disable"
     trigger:
       acpid:
-        docked: true
+        docked: false
       network:
-        - "enp0s31f6:192.168.1.1"
+        enp0s31f6:
+          ip: "*"
       screens:
         count: 3
         connected:

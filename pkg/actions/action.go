@@ -1,8 +1,10 @@
 package actions
 
+import "context"
+
 // Action contains function to match the given
 type Action interface {
-	Run(interface{}) error
+	Run(context.Context, map[string]interface{}) (string, error)
 }
 
 var actions = make(map[string]Action)
@@ -16,4 +18,10 @@ func Register(name string, action Action) {
 func Exist(name string) bool {
 	_, ok := actions[name]
 	return ok
+}
+
+// Get
+func Get(name string) Action {
+	action, _ := actions[name]
+	return action
 }

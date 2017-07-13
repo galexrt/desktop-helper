@@ -22,5 +22,7 @@ func New() triggers.Trigger {
 
 // GetState with the given config and return struct
 func (trigger Trigger) GetState(ctx context.Context, config interface{}) (map[string]interface{}, error) {
-	return map[string]interface{}{}, nil
+	return map[string]interface{}{
+		"docked": false,
+	}, nil
 }

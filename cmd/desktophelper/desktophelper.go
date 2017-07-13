@@ -43,18 +43,20 @@ func main() {
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	wg.Add(1)
 	go func() {
-		sig := <-c
-		log.Infof("Signal received: %s\n", sig)
+		select {
+		case sig := <-c:
+			log.Infof("Signal received: %s", sig)
+		case <-ctx.Done():
+		}
 		cancel()
-		wg.Done()
 	}()
 
 	wg.Add(1)
 	go func() {
-		log.Info(detect.Run(ctx))
-		wg.Done()
+		defer wg.Done()
+		log.Error(detect.Run(ctx))
+		cancel()
 	}()
 	wg.Wait()
 }

@@ -1,15 +1,14 @@
 package screenlayout
 
 import (
+	"context"
+
 	"github.com/galexrt/desktop-helper/pkg/actions"
 )
 
 // Action contains options
 type Action struct {
 	actions.Action
-}
-
-type ActionOptions struct {
 }
 
 func init() {
@@ -22,6 +21,6 @@ func New() actions.Action {
 }
 
 // Run the given options
-func (action Action) Run(opts interface{}) error {
-	return nil
+func (action Action) Run(ctx context.Context, opts map[string]interface{}) (string, error) {
+	return "", nil
 }

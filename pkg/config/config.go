@@ -22,10 +22,10 @@ type DetectorOptions struct {
 
 // Profile contains enable and disable ProfileEvent options
 type Profile struct {
-	Name    string                 `yaml:"name"`
-	Enable  map[string]interface{} `yaml:"on_enable"`
-	Disable map[string]interface{} `yaml:"on_disable"`
-	Trigger map[string]interface{} `yaml:"trigger"`
+	Name    string                            `yaml:"name"`
+	Enable  map[string]map[string]interface{} `yaml:"on_enable"`
+	Disable map[string]map[string]interface{} `yaml:"on_disable"`
+	Trigger map[string]interface{}            `yaml:"trigger"`
 }
 
 // Read config file by filename and returns Config
