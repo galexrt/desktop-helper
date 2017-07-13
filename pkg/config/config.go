@@ -25,7 +25,7 @@ type Profile struct {
 	Name    string                            `yaml:"name"`
 	Enable  map[string]map[string]interface{} `yaml:"on_enable"`
 	Disable map[string]map[string]interface{} `yaml:"on_disable"`
-	Trigger map[string]interface{}            `yaml:"trigger"`
+	Trigger map[string]map[string]interface{} `yaml:"trigger"`
 }
 
 // Read config file by filename and returns Config

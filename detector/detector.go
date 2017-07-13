@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,7 +17,7 @@ import (
 
 // Detector containing configuration for the detector itself
 type Detector struct {
-	activeTriggers map[string]interface{}
+	activeTriggers map[string]map[string]interface{}
 	checkInterval  time.Duration
 	timeout        time.Duration
 	triggersCache  map[string]triggers.Trigger
@@ -25,10 +26,14 @@ type Detector struct {
 	runner         *runner.Runner
 }
 
+func getTriggerName(name string) string {
+	return strings.SplitN(name, "_", 2)[0]
+}
+
 // NewDetector creates a new detector
 func NewDetector(config *cfg.Config) (*Detector, error) {
 	detect := &Detector{
-		activeTriggers: make(map[string]interface{}),
+		activeTriggers: make(map[string]map[string]interface{}),
 		triggersCache:  make(map[string]triggers.Trigger),
 		profiles:       make(map[string]cfg.Profile),
 		runner:         runner.New(config),
@@ -36,14 +41,14 @@ func NewDetector(config *cfg.Config) (*Detector, error) {
 	detect.profiles = config.Profiles
 
 	for profileName, profile := range config.Profiles {
-		for name, triggerConf := range profile.Trigger {
-			if !triggers.Exist(name) {
-				return detect, fmt.Errorf("given trigger '%s' in profile '%s' does not exist", name, profileName)
+		for realName, triggerConf := range profile.Trigger {
+
+			if !triggers.Exist(getTriggerName(realName)) {
+				return detect, fmt.Errorf("given trigger '%s' in profile '%s' does not exist", getTriggerName(realName), profileName)
 			}
-			if _, ok := detect.activeTriggers[name]; !ok {
-				detect.activeTriggers[name] = triggerConf
-				log.With("func", "NewDetector").
-					Debugf("Trigger added to check list: '%s'", name)
+			if _, ok := detect.activeTriggers[realName]; !ok {
+				detect.activeTriggers[realName] = triggerConf
+				log.With("func", "NewDetector").Debugf("Trigger added to check list: '%s'", realName)
 			}
 		}
 	}
@@ -84,12 +89,12 @@ func (detect Detector) Run(bctx context.Context) error {
 					detect.currentProfile = profile
 				}
 				if detect.currentProfile != profile {
-					detect.currentProfile = profile
 					err = detect.runner.OnDisable(ctx, detect.currentProfile)
 					if err != nil {
 						errors <- err
 						return
 					}
+					detect.currentProfile = profile
 				}
 				err = detect.runner.OnEnable(ctx, detect.currentProfile)
 				if err != nil {
@@ -129,19 +134,19 @@ func (detect Detector) getStateFromTriggers(ctx context.Context) (map[string]int
 		// Get the current state of all activeTriggers
 		for triggerName := range detect.activeTriggers {
 			if _, ok := detect.triggersCache[triggerName]; !ok {
-				detect.triggersCache[triggerName] = triggers.Get(triggerName)
+				detect.triggersCache[getTriggerName(triggerName)] = triggers.Get(getTriggerName(triggerName))
 			}
 			wg.Add(1)
-			go func(name string, trigger triggers.Trigger, triggerConf interface{}) {
+			go func(name string, trigger triggers.Trigger, triggerConf map[string]interface{}) {
 				defer wg.Done()
-				result, err := trigger.GetState(ctx, triggerConf)
+				result, err := trigger.GetState(ctx, name, triggerConf)
 				mutex.Lock()
 				results[name] = result
 				mutex.Unlock()
 				if err != nil {
 					errors <- err
 				}
-			}(triggerName, detect.triggersCache[triggerName], detect.activeTriggers[triggerName])
+			}(triggerName, detect.triggersCache[getTriggerName(triggerName)], detect.activeTriggers[triggerName])
 		}
 	}()
 	wgc := make(chan struct{})
@@ -183,6 +188,9 @@ func (detect Detector) evaluateStateFromTriggers(states map[string]interface{}) 
 					matched = true
 					continue
 				}
+				log.Debugf("Values: %+v == %+v\n", value, states[key])
+				log.Debugf("Profile '%s' part '%s' NOT matched.", name, key)
+				matched = false
 				break
 			}
 		}

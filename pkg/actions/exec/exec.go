@@ -26,16 +26,18 @@ func New() actions.Action {
 
 // Run against the given options
 func (action Action) Run(ctx context.Context, options map[string]interface{}) (string, error) {
-	command := strings.SplitN(options["command"].(string), " ", 2)
+	parts := strings.Fields(options["command"].(string))
+	command := parts[0]
+	parts = parts[1:len(parts)]
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var cmd *exec.Cmd
 	if len(command) > 1 {
-		cmd = exec.CommandContext(ctx, command[0], strings.Join(command[1:], " "))
+		cmd = exec.CommandContext(ctx, command, parts...)
 	} else {
-		cmd = exec.CommandContext(ctx, command[0], "")
+		cmd = exec.CommandContext(ctx, command, "")
 	}
 	out, err := cmd.CombinedOutput()
-	log.With("action", "exec").With("command", options["command"]).Debugf("Output: %+s", string(out))
+	log.With("action", "exec").With("cmd", options["command"]).With("err", err).Debugf("Output: %+s", string(out))
 	return string(out), err
 }

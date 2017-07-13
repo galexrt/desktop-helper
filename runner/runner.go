@@ -37,10 +37,6 @@ func (run *Runner) OnEnable(ctx context.Context, profile string) error {
 
 // OnDisable
 func (run *Runner) OnDisable(ctx context.Context, profile string) error {
-	if run.lastProfile == profile {
-		return nil
-	}
-	run.lastProfile = profile
 	log.Debugf("Disable for profile '%s' triggered.", profile)
 	_, err := run.runActions(ctx, run.profiles[run.lastProfile].Disable)
 	return err
@@ -68,7 +64,6 @@ func (run *Runner) runActions(ctx context.Context, list map[string]map[string]in
 				outputs[name] = output
 				mutex.Unlock()
 				if err != nil {
-					log.Warnf("TEST: %+v", err)
 					errors <- err
 				}
 			}(name, run.actionsCache[name], conf)

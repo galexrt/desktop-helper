@@ -7,18 +7,15 @@ profiles:
   company-docked-three-monitors:
     on_enable:
       exec:
-        command: "/bin/echo Hello World!"
-      screenlayout:
-        layout: "company-office-three-monitors-special"
+        command: "/usr/bin/ln -sf /home/atrost/Pictures/Desktop/lockscreen-three-monitors.png /home/atrost/Pictures/Desktop/lockscreen.png"
     on_disable:
-      screenlayout:
-        layout: "disable"
+      exec:
+        command: "/usr/bin/ln -sf /home/atrost/Pictures/Desktop/lockscreen-single.png /home/atrost/Pictures/Desktop/lockscreen.png"
     trigger:
       acpid:
-        docked: false
-      network:
-        enp0s31f6:
-            ip: "*"
+        docked: true
+      network_enp0s31f6:
+        ip: "10.20.0.77/23"
       screens:
         count: 3
         connected:
@@ -28,18 +25,15 @@ profiles:
   company-on-the-go:
     on_enable:
       exec:
-        command: "/bin/echo Hello World!"
-      screenlayout:
-        layout: "company-office-three-monitors-special"
+        command: "/usr/bin/ln -sf /home/atrost/Pictures/Desktop/lockscreen-three-monitors.png /home/atrost/Pictures/Desktop/lockscreen.png"
     on_disable:
-      screenlayout:
-        layout: "disable"
+      exec:
+        command: "/usr/bin/ln -sf /home/atrost/Pictures/Desktop/lockscreen-single.png /home/atrost/Pictures/Desktop/lockscreen.png"
     trigger:
       acpid:
-        docked: true
-      network:
-        wlp1s0:
-          network_name: "*"
+        docked: false
+      network_wlp1s0:
+        network_name: "*"
       screens:
         count: 1
         connected:
@@ -48,17 +42,16 @@ profiles:
     on_enable:
       exec:
         command: "/bin/echo Hello World!"
-      screenlayout:
-        layout: "home"
     on_disable:
-      screenlayout:
-        layout: "disable"
+      exec:
+        command: "/usr/bin/ln -sf /home/atrost/Pictures/Desktop/lockscreen-single.png /home/atrost/Pictures/Desktop/lockscreen.png"
     trigger:
       acpid:
-        docked: false
-      network:
-        enp0s31f6:
-          ip: "*"
+        docked: true
+      network_enp0s31f6:
+        options:
+          addrsKey: 0
+        ip: "192.168.1.139/24"
       screens:
         count: 3
         connected:

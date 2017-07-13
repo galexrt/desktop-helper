@@ -21,6 +21,6 @@ func New() triggers.Trigger {
 }
 
 // GetState with the given config and return struct
-func (trigger Trigger) GetState(ctx context.Context, config interface{}) (map[string]interface{}, error) {
+func (trigger Trigger) GetState(ctx context.Context, name string, config map[string]interface{}) (map[string]interface{}, error) {
 	return map[string]interface{}{}, nil
 }
