@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/galexrt/desktop-helper/config"
 	xrandrlib "github.com/galexrt/desktop-helper/pkg/xrandr"
 	"github.com/galexrt/desktop-helper/poller/triggers"
+	log "github.com/sirupsen/logrus"
 )
 
 type Trigger struct {
@@ -41,7 +43,13 @@ func (trg *Trigger) GetState() error {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		if !trg.cfg.IgnoreSegFault &&
+			strings.Contains(err.Error(), "segementation fault") ||
+			!trg.cfg.IgnoreErrors {
+			return err
+		}
+		log.Warnf("ignored segfault/error, returning to keep current state: '%s'", err)
+		return nil
 	}
 	screens, err := xrandrlib.Parse(string(out))
 	trg.state = screens

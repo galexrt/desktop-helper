@@ -15,7 +15,9 @@ func Read(filename string) (*Config, error) {
 		},
 		TriggersConfig: TriggersConfig{
 			Xrandr: &XrandrConfig{
-				XrandrBinary: "/usr/bin/xrandr",
+				XrandrBinary:   "/usr/bin/xrandr",
+				IgnoreSegFault: true,
+				XAuthoritiy:    "/home/$USER/.Xauthority",
 			},
 		},
 	}
