@@ -3,40 +3,45 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
 
-	"github.com/galexrt/desktop-helper/detector"
-	"github.com/galexrt/desktop-helper/pkg/config"
-	"github.com/prometheus/common/log"
+	yaml "gopkg.in/yaml.v2"
 
-	// Triggers need to be imported for their init() to becalled and register themselves
-	_ "github.com/galexrt/desktop-helper/pkg/triggers/acpid"
-	_ "github.com/galexrt/desktop-helper/pkg/triggers/hosts"
-	_ "github.com/galexrt/desktop-helper/pkg/triggers/network"
-	_ "github.com/galexrt/desktop-helper/pkg/triggers/screens"
+	"github.com/galexrt/desktop-helper/config"
+	"github.com/galexrt/desktop-helper/poller"
+	log "github.com/sirupsen/logrus"
 
-	// Actions need to be imported for their init() to becalled and register themselves
-	_ "github.com/galexrt/desktop-helper/pkg/actions/exec"
+	// Triggers
+	_ "github.com/galexrt/desktop-helper/poller/triggers/ipaddress"
+	// Actions
+	_ "github.com/galexrt/desktop-helper/runner/actions/exec"
 )
 
 var (
 	configFilename string
+	debug          bool
 )
 
 func init() {
 	flag.StringVar(&configFilename, "config", "./config.yaml", "Config file location")
+	flag.BoolVar(&debug, "debug", true, "Enable debug mode")
 }
 
 func main() {
 	flag.Parse()
 	cfg, _ := config.Read(configFilename)
-	detect, err := detector.NewDetector(cfg)
+	if debug {
+		log.SetLevel(log.DebugLevel)
+		printed, _ := yaml.Marshal(cfg)
+		fmt.Printf("%+v\n", string(printed))
+	}
+	poller, err := poller.New(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	wg := sync.WaitGroup{}
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -55,11 +60,11 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		log.Error(detect.Run(ctx))
+		log.Error(poller.Run(ctx))
 		cancel()
 	}()
 	wg.Wait()
-	if sig.String() == "" {
+	if sig != nil && sig.String() == "" {
 		main()
 	}
 }

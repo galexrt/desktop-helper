@@ -2,71 +2,58 @@ package runner
 
 import (
 	"context"
+	"reflect"
 	"sync"
 
-	"github.com/galexrt/desktop-helper/pkg/actions"
-	"github.com/galexrt/desktop-helper/pkg/config"
-	"github.com/prometheus/common/log"
+	"github.com/galexrt/desktop-helper/config"
+	"github.com/galexrt/desktop-helper/runner/actions"
+	"github.com/galexrt/desktop-helper/utils"
 )
 
-// Runner
 type Runner struct {
-	profiles     map[string]config.Profile
-	lastProfile  string
-	actionsCache map[string]actions.Action
+	config     config.RunnerConfig
+	actionsMgr *actions.Manager
 }
 
-func New(config *config.Config) *Runner {
+func New(cfg config.RunnerConfig, actionsMgr *actions.Manager) (*Runner, error) {
 	return &Runner{
-		profiles:     config.Profiles,
-		actionsCache: make(map[string]actions.Action),
-	}
+		config:     cfg,
+		actionsMgr: actionsMgr,
+	}, nil
 }
 
-// OnEnable
-func (run *Runner) OnEnable(ctx context.Context, profile string) error {
-	if run.lastProfile == profile {
-		return nil
-	}
-	run.lastProfile = profile
-	log.Debugf("Enable for profile '%s' triggered.", profile)
-	_, err := run.runActions(ctx, run.profiles[run.lastProfile].Enable)
-	return err
-
+func (rner *Runner) OnEnable(ctx context.Context, profile config.Profile) error {
+	return rner.runActions(ctx, profile.Enable)
 }
 
-// OnDisable
-func (run *Runner) OnDisable(ctx context.Context, profile string) error {
-	log.Debugf("Disable for profile '%s' triggered.", profile)
-	_, err := run.runActions(ctx, run.profiles[run.lastProfile].Disable)
-	return err
+func (rner *Runner) OnDisable(ctx context.Context, profile config.Profile) error {
+	return rner.runActions(ctx, profile.Disable)
 }
 
-func (run *Runner) runActions(ctx context.Context, list map[string]map[string]interface{}) (map[string]interface{}, error) {
+func (rner *Runner) runActions(ctx context.Context, actns config.ActionOption) error {
+	errors := make(chan error, 1)
 	wg := sync.WaitGroup{}
-	tctx, cancel := context.WithCancel(ctx)
-	errors := make(chan error)
-	outputs := map[string]interface{}{}
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		var mutex = &sync.Mutex{}
-		for name, conf := range list {
-			if _, ok := run.actionsCache[name]; !ok {
-				run.actionsCache[name] = actions.Get(name)
+		msValuePtr := reflect.ValueOf(&actns)
+		msValue := msValuePtr.Elem()
+		for i := 0; i < msValue.NumField(); i++ {
+			field := msValue.Field(i)
+			name := utils.GetTriggerName(field.Type().String())
+			actn, err := rner.actionsMgr.Get(name)
+			if err != nil {
+				errors <- err
+				return
 			}
 			wg.Add(1)
-			go func(name string, action actions.Action, actionConf map[string]interface{}) {
+			go func(action actions.Action) {
 				defer wg.Done()
-				log.Debugf("action: %+v; actionConf: %+v", name, actionConf)
-				output, err := action.Run(tctx, actionConf)
-				mutex.Lock()
-				outputs[name] = output
-				mutex.Unlock()
+				err = action.Execute(actns)
 				if err != nil {
 					errors <- err
 				}
-			}(name, run.actionsCache[name], conf)
+			}(actn)
 		}
 	}()
 	wgc := make(chan struct{})
@@ -76,12 +63,10 @@ func (run *Runner) runActions(ctx context.Context, list map[string]map[string]in
 	}()
 	var err error
 	select {
-	case err = <-errors:
 	case <-wgc:
-	case <-tctx.Done():
 	case <-ctx.Done():
+	case err = <-errors:
 	}
-	cancel()
-
-	return outputs, err
+	wg.Wait()
+	return err
 }
