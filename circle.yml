@@ -3,8 +3,6 @@ machine:
     PATH: "/usr/local/go/bin:/usr/local/go/bin:~/.go_workspace/bin:${PATH}"
     GOPATH: "${HOME}/.go_workspace:/usr/local/go"
     VERSION: "0.1.0"
-  services:
-    - docker
 
 dependencies:
   override:
