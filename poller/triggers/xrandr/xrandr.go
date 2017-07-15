@@ -43,13 +43,13 @@ func (trg *Trigger) GetState() error {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		if !trg.cfg.IgnoreSegFault &&
-			strings.Contains(err.Error(), "segementation fault") ||
-			!trg.cfg.IgnoreErrors {
-			return err
+		if (trg.cfg.IgnoreSegFault &&
+			strings.Contains(err.Error(), "segementation fault")) ||
+			trg.cfg.IgnoreErrors {
+			log.Warnf("ignored segfault/error, returning to keep current state: '%s'", err)
+			return nil
 		}
-		log.Warnf("ignored segfault/error, returning to keep current state: '%s'", err)
-		return nil
+		return err
 	}
 	screens, err := xrandrlib.Parse(string(out))
 	trg.state = screens
