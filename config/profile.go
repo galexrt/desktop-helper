@@ -2,8 +2,8 @@ package config
 
 type Profile struct {
 	Name    string        `yaml:"name"`
-	Enable  ActionOption  `yaml:"onEnable"`
-	Disable ActionOption  `yaml:"onDisable"`
+	Enable  ActionOption  `yaml:"onenable"`
+	Disable ActionOption  `yaml:"ondisable"`
 	Trigger TriggerOption `yaml:"trigger"`
 }
 
@@ -41,6 +41,6 @@ type IPAddress struct {
 }
 
 type XrandrOption struct {
-	ConnectedCount int      `omitempty,yaml:"connectedCount"`
+	ConnectedCount int      `omitempty,yaml:"connectedcount"`
 	Screens        []string `omitempty,yaml:"screens"`
 }

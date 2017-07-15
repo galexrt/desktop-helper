@@ -12,8 +12,8 @@ func Parse(input string) (*Screens, error) {
 		ConnectedCount: 0,
 	}
 	for _, line := range strings.Split(input, "\n") {
-		if strings.Contains(line, "connected") {
-			screens.List = append(screens.List, strings.SplitN(line, " ", 1)[0])
+		if strings.Contains(line, " connected ") {
+			screens.List = append(screens.List, strings.Split(line, " ")[0])
 			screens.ConnectedCount++
 		}
 	}

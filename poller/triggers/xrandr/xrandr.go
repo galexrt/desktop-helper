@@ -1,6 +1,8 @@
 package xrandr
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/galexrt/desktop-helper/config"
@@ -30,8 +32,14 @@ func New(cfg config.TriggersConfig) (triggers.Trigger, error) {
 
 func (trg *Trigger) GetState() error {
 	// TODO
-	cmd := exec.Command(trg.cfg.XrandrBinary, "")
-	out, err := cmd.Output()
+	cmd := exec.Command(trg.cfg.XrandrBinary, "--query")
+	env := os.Environ()
+	env = append(env,
+		fmt.Sprintf("DISPLAY=%s", trg.cfg.Display),
+		fmt.Sprintf("XAUTHORITY=%s", trg.cfg.XAuthoritiy),
+	)
+	cmd.Env = env
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
@@ -41,7 +49,6 @@ func (trg *Trigger) GetState() error {
 }
 
 func (trg *Trigger) Match(opts config.TriggerOption) (bool, error) {
-	// TODO
 	var match bool
 	if trg.state.ConnectedCount == opts.Xrandr.ConnectedCount {
 		match = true

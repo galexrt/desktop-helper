@@ -8,17 +8,19 @@ triggersConfig:
     interfaces:
     - enp0s31f6
     - wlp1s0
+  xrandr:
+    xauthoritiy: /home/atrost/.Xauthoritiy
 actionsConfig:
   exec: {}
 profiles:
 - name: home
-  onEnable:
+  onenable:
     exec:
       command: "/bin/echo HELLO WORLD!"
-#    libnotify:
-#      delay: "5s"
-#      message: "Profile enabled: home"
-  onDisable:
+    libnotify:
+      delay: "5s"
+      message: "Profile enabled: home"
+  ondisable:
     exec:
       command: "/bin/echo GOODBYE WORLD!"
     libnotify:
@@ -31,11 +33,13 @@ profiles:
         enp0s31f6:
           address: 192.168.1.139/24
           key: 0
+    xrandr:
+      connectedcount: 2
 - name: test
-  onEnable:
+  onenable:
     exec:
       command: "/bin/echo HELLO WORLD 2!"
-  onDisable:
+  ondisable:
     exec:
       command: "/bin/echo GOODBYE WORLD 2!"
   trigger:

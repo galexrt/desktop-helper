@@ -10,6 +10,8 @@ type IPAddressConfig struct {
 }
 
 type XrandrConfig struct {
-	XrandrBinary    string   `yaml:"xrandrBinary"`
-	ScreensToIgnore []string `yaml:"screensToIgnore"`
+	XrandrBinary  string   `yaml:"xrandrbinary"`
+	XAuthoritiy   string   `yaml:"xauthoritiy"`
+	Display       string   `yaml:"display"`
+	ScreensIgnore []string `yaml:"screensignore"`
 }

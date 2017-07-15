@@ -13,6 +13,11 @@ func Read(filename string) (*Config, error) {
 			PollInterval: "2s",
 			Timeout:      "3s",
 		},
+		TriggersConfig: TriggersConfig{
+			Xrandr: &XrandrConfig{
+				XrandrBinary: "/usr/bin/xrandr",
+			},
+		},
 	}
 
 	content, err := ioutil.ReadFile(filename)
