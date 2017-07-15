@@ -43,8 +43,12 @@ func (trg *Trigger) GetState() error {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
+		fmt.Printf("TEST: %+v -- %+v -- %+v\n", trg.cfg.IgnoreSegFault &&
+			strings.Contains(err.Error(), "segmentation fault"), trg.cfg.IgnoreErrors, (trg.cfg.IgnoreSegFault &&
+			strings.Contains(err.Error(), "segmentation fault")) ||
+			trg.cfg.IgnoreErrors)
 		if (trg.cfg.IgnoreSegFault &&
-			strings.Contains(err.Error(), "segementation fault")) ||
+			strings.Contains(err.Error(), "segmentation fault")) ||
 			trg.cfg.IgnoreErrors {
 			log.Warnf("ignored segfault/error, returning to keep current state: '%s'", err)
 			return nil
