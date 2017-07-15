@@ -5,6 +5,7 @@ import (
 )
 
 func GetTriggerName(name string) string {
+	name = strings.Replace(name, "*", "", 1)
 	name = strings.Split(name, ".")[1]
 	name = strings.Replace(name, "Option", "", 1)
 	return strings.ToLower(name)

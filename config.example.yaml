@@ -15,9 +15,9 @@ profiles:
   onEnable:
     exec:
       command: "/bin/echo HELLO WORLD!"
-    libnotify:
-      delay: "5s"
-      message: "Profile enabled: home"
+#    libnotify:
+#      delay: "5s"
+#      message: "Profile enabled: home"
   onDisable:
     exec:
       command: "/bin/echo GOODBYE WORLD!"

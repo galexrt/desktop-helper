@@ -152,16 +152,18 @@ func (pol *Poller) matchTriggers(ctx context.Context) (int, error) {
 
 		for i := 0; i < msValue.NumField(); i++ {
 			field := msValue.Field(i)
-			name := utils.GetTriggerName(field.Type().String())
-			trigger, err := pol.triggersMgr.Get(name)
-			if err != nil {
-				return profID, err
+			if !field.IsNil() {
+				name := utils.GetTriggerName(field.Type().String())
+				trigger, err := pol.triggersMgr.Get(name)
+				if err != nil {
+					return profID, err
+				}
+				match, err = trigger.Match(profile.Trigger)
+				if err != nil {
+					return profID, err
+				}
+				log.WithField("trigger", name).Debugf("match: %+v", match)
 			}
-			match, err = trigger.Match(profile.Trigger)
-			if err != nil {
-				return profID, err
-			}
-			log.WithField("trigger", name).Debugf("match: %+v", match)
 		}
 		if match {
 			profID = id
@@ -182,7 +184,9 @@ func getEnabledTriggers(profiles []config.Profile) map[string]struct{} {
 
 		for i := 0; i < msValue.NumField(); i++ {
 			field := msValue.Field(i)
-			enabledTriggers[utils.GetTriggerName(field.Type().String())] = struct{}{}
+			if !field.IsNil() {
+				enabledTriggers[utils.GetTriggerName(field.Type().String())] = struct{}{}
+			}
 		}
 	}
 	return enabledTriggers

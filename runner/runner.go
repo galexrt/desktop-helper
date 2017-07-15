@@ -40,20 +40,22 @@ func (rner *Runner) runActions(ctx context.Context, actns config.ActionOption) e
 		msValue := msValuePtr.Elem()
 		for i := 0; i < msValue.NumField(); i++ {
 			field := msValue.Field(i)
-			name := utils.GetTriggerName(field.Type().String())
-			actn, err := rner.actionsMgr.Get(name)
-			if err != nil {
-				errors <- err
-				return
-			}
-			wg.Add(1)
-			go func(action actions.Action) {
-				defer wg.Done()
-				err = action.Execute(actns)
+			if !field.IsNil() {
+				name := utils.GetTriggerName(field.Type().String())
+				actn, err := rner.actionsMgr.Get(name)
 				if err != nil {
 					errors <- err
+					return
 				}
-			}(actn)
+				wg.Add(1)
+				go func(action actions.Action) {
+					defer wg.Done()
+					err = action.Execute(actns)
+					if err != nil {
+						errors <- err
+					}
+				}(actn)
+			}
 		}
 	}()
 	wgc := make(chan struct{})

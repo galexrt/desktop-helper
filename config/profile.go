@@ -8,8 +8,8 @@ type Profile struct {
 }
 
 type ActionOption struct {
-	Exec      ExecOption      `yaml:"exec"`
-	Libnotify LibnotifyOption `yaml:"libnotify"`
+	Exec      *ExecOption      `yaml:"exec"`
+	Libnotify *LibnotifyOption `yaml:"libnotify"`
 }
 
 type ExecOption struct {
@@ -27,7 +27,7 @@ type LibnotifyOption struct {
 // TRIGGER OPTIONS ===============
 
 type TriggerOption struct {
-	IPAddress IPAddressOption `yaml:"ipAddress"`
+	IPAddress *IPAddressOption `yaml:"ipAddress"`
 }
 
 type IPAddressOption struct {
