@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var tests = []string{
+var testsParse = []string{
 	`Screen 0: minimum 8 x 8, current 1920 x 2160, maximum 32767 x 32767
 eDP1 connected 1920x1080+0+1080 (normal left inverted right x axis y axis) 310mm x 170mm
    1920x1080     60.02*+  47.99
@@ -52,7 +52,7 @@ HDMI1 disconnected (normal left inverted right x axis y axis)
 HDMI2 disconnected (normal left inverted right x axis y axis)
 VIRTUAL1 disconnected (normal left inverted right x axis y axis)`,
 }
-var results = []Screens{
+var resultsParse = []Screens{
 	{
 		ConnectedCount: 2,
 		List: []string{
@@ -67,10 +67,39 @@ var results = []Screens{
 }
 
 func TestParse(t *testing.T) {
-	for key, test := range tests {
+	for key, test := range testsParse {
 		result, _ := Parse(test)
-		if reflect.DeepEqual(result, results[key]) {
-			t.Fatalf("result is different: %+v - %+v", result, results[key])
+		if reflect.DeepEqual(&result, resultsParse[key]) {
+			t.Fatalf("result is different: %+v - %+v", result, resultsParse[key])
+		}
+	}
+}
+
+var testsParseActiveMonitors = []string{
+	`Monitors: 2
+ 0: +eDP1 1920/310x1080/170+0+1080  eDP1
+ 1: +HDMI1 1920/530x1080/300+0+0  HDMI1`,
+	`Monitors: 0`,
+}
+var resultsParseActiveMonitors = []Screens{
+	{
+		ConnectedCount: 2,
+		List: []string{
+			"eDP1",
+			"HDMI1",
+		},
+	},
+	{
+		ConnectedCount: 0,
+		List:           []string{},
+	},
+}
+
+func TestParseActiveMonitors(t *testing.T) {
+	for key, test := range testsParseActiveMonitors {
+		result, _ := ParseActiveMonitors(test)
+		if reflect.DeepEqual(&result, resultsParseActiveMonitors[key]) {
+			t.Fatalf("result is different: %+v - %+v", result, resultsParseActiveMonitors[key])
 		}
 	}
 }

@@ -3,9 +3,9 @@ package config
 // Config contains the config file structure
 type Config struct {
 	Version        string         `yaml:"version"`
-	PollerConfig   PollerConfig   `yaml:"pollerConfig"`
-	TriggersConfig TriggersConfig `yaml:"triggersConfig"`
-	ActionsConfig  ActionsConfig  `yaml:"actionsConfig"`
-	RunnerConfig   RunnerConfig   `yaml:"runnerConfig"`
+	PollerConfig   PollerConfig   `yaml:"pollerconfig"`
+	TriggersConfig TriggersConfig `yaml:"triggersconfig"`
+	ActionsConfig  ActionsConfig  `yaml:"actionsconfig"`
+	RunnerConfig   RunnerConfig   `yaml:"runnerconfig"`
 	Profiles       []Profile      `yaml:"profiles"`
 }

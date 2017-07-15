@@ -169,6 +169,9 @@ func (pol *Poller) matchTriggers(ctx context.Context) (int, error) {
 					return profID, err
 				}
 				log.WithField("profile", profile.Name).WithField("trigger", name).Debugf("match: %+v", match)
+				if !match {
+					break
+				}
 			}
 		}
 		if match {

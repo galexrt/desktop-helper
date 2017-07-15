@@ -15,7 +15,7 @@ import (
 type Trigger struct {
 	triggers.Trigger
 	cfg   *config.XrandrConfig
-	state *xrandrlib.Screens
+	state xrandrlib.Screens
 }
 
 type IPAddress struct {
@@ -33,8 +33,7 @@ func New(cfg config.TriggersConfig) (triggers.Trigger, error) {
 }
 
 func (trg *Trigger) GetState() error {
-	// TODO
-	cmd := exec.Command(trg.cfg.XrandrBinary, "--query")
+	cmd := exec.Command(trg.cfg.XrandrBinary, "--listmonitors")
 	env := os.Environ()
 	env = append(env,
 		fmt.Sprintf("DISPLAY=%s", trg.cfg.Display),
@@ -43,19 +42,24 @@ func (trg *Trigger) GetState() error {
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("TEST: %+v -- %+v -- %+v\n", trg.cfg.IgnoreSegFault &&
-			strings.Contains(err.Error(), "segmentation fault"), trg.cfg.IgnoreErrors, (trg.cfg.IgnoreSegFault &&
-			strings.Contains(err.Error(), "segmentation fault")) ||
-			trg.cfg.IgnoreErrors)
 		if (trg.cfg.IgnoreSegFault &&
-			strings.Contains(err.Error(), "segmentation fault")) ||
+			strings.Contains(err.Error(), "signal: segmentation fault")) ||
 			trg.cfg.IgnoreErrors {
 			log.Warnf("ignored segfault/error, returning to keep current state: '%s'", err)
 			return nil
 		}
 		return err
 	}
-	screens, err := xrandrlib.Parse(string(out))
+	if len(out) == 0 {
+		log.Warn("ignored empty xrandr output")
+		return nil
+	}
+	if trg.cfg.IgnoreSegFault &&
+		strings.Contains(string(out), "signal: segmentation fault") {
+		log.Warn("ignored segfault in xrandr output")
+		return nil
+	}
+	screens, err := xrandrlib.ParseActiveMonitors(string(out))
 	trg.state = screens
 	return err
 }
