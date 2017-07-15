@@ -33,7 +33,7 @@ func New(cfg config.TriggersConfig) (triggers.Trigger, error) {
 }
 
 func (trg *Trigger) GetState() error {
-	cmd := exec.Command(trg.cfg.XrandrBinary, "--listmonitors")
+	cmd := exec.Command(trg.cfg.XrandrBinary, "--current")
 	env := os.Environ()
 	env = append(env,
 		fmt.Sprintf("DISPLAY=%s", trg.cfg.Display),
@@ -59,7 +59,7 @@ func (trg *Trigger) GetState() error {
 		log.Warn("ignored segfault in xrandr output")
 		return nil
 	}
-	screens, err := xrandrlib.ParseActiveMonitors(string(out))
+	screens, err := xrandrlib.Parse(string(out))
 	trg.state = screens
 	return err
 }
