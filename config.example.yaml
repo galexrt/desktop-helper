@@ -1,10 +1,10 @@
 ---
 version: "1"
-pollerOptions:
-  pollInterval: 3
-  timeout: 3
+pollerConfig:
+  pollInterval: "3s"
+  timeout: "5s"
 triggersConfig:
-  ipAddress:
+  ipaddress:
     interfaces:
     - enp0s31f6
     - wlp1s0
@@ -26,7 +26,7 @@ profiles:
       message: "Profile disabled: home"
       urgency: 2
   trigger:
-    ipAddress:
+    ipaddress:
       addresses:
         enp0s31f6:
           address: 192.168.1.139/24
@@ -39,7 +39,7 @@ profiles:
     exec:
       command: "/bin/echo GOODBYE WORLD 2!"
   trigger:
-    ipAddress:
+    ipaddress:
       addresses:
         enp0s31f6:
           address: 192.168.1.150/24

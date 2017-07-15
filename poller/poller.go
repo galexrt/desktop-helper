@@ -20,11 +20,16 @@ type Poller struct {
 	profiles        []config.Profile
 	profile         int
 	enabledTriggers map[string]struct{}
+	pollInterval    time.Duration
 }
 
 func New(cfg *config.Config) (*Poller, error) {
 	actionsMgr := actions.NewManager(cfg.ActionsConfig)
 	rner, err := runner.New(cfg.RunnerConfig, actionsMgr)
+	if err != nil {
+		return nil, err
+	}
+	pollInterval, err := time.ParseDuration(cfg.PollerConfig.PollInterval)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +39,7 @@ func New(cfg *config.Config) (*Poller, error) {
 		profiles:        cfg.Profiles,
 		profile:         -1,
 		enabledTriggers: getEnabledTriggers(cfg.Profiles),
+		pollInterval:    pollInterval,
 	}
 	return poller, nil
 }
@@ -82,7 +88,7 @@ func (pol *Poller) Run(bctx context.Context) error {
 			select {
 			case <-ctx.Done():
 				return
-			case <-time.After(3 * time.Second):
+			case <-time.After(pol.pollInterval):
 			}
 		}
 	}()
@@ -162,7 +168,7 @@ func (pol *Poller) matchTriggers(ctx context.Context) (int, error) {
 				if err != nil {
 					return profID, err
 				}
-				log.WithField("trigger", name).Debugf("match: %+v", match)
+				log.WithField("profile", profile.Name).WithField("trigger", name).Debugf("match: %+v", match)
 			}
 		}
 		if match {
@@ -173,6 +179,7 @@ func (pol *Poller) matchTriggers(ctx context.Context) (int, error) {
 	if !match {
 		profID = -1
 	}
+	log.Debugf("profID: %d", profID)
 	return profID, nil
 }
 

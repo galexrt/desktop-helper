@@ -13,7 +13,7 @@ import (
 
 type Action struct {
 	actions.Action
-	cfg config.ExecConfig
+	cfg *config.ExecConfig
 }
 
 func init() {

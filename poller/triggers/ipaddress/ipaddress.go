@@ -9,7 +9,7 @@ import (
 
 type Trigger struct {
 	triggers.Trigger
-	cfg   config.IPAddressConfig
+	cfg   *config.IPAddressConfig
 	state map[string]net.Interface
 }
 

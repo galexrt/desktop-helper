@@ -1,6 +1,6 @@
 package config
 
-type PollerOptions struct {
-	PollInterval int64 `yaml:"pollInterval"`
-	Timeout      int64 `yaml:"timeout"`
+type PollerConfig struct {
+	PollInterval string `yaml:"pollInterval"`
+	Timeout      string `yaml:"timeout"`
 }

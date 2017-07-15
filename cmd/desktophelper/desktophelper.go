@@ -16,6 +16,7 @@ import (
 
 	// Triggers
 	_ "github.com/galexrt/desktop-helper/poller/triggers/ipaddress"
+	_ "github.com/galexrt/desktop-helper/poller/triggers/xrandr"
 	// Actions
 	_ "github.com/galexrt/desktop-helper/runner/actions/exec"
 	_ "github.com/galexrt/desktop-helper/runner/actions/libnotify"

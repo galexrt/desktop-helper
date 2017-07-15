@@ -27,7 +27,8 @@ type LibnotifyOption struct {
 // TRIGGER OPTIONS ===============
 
 type TriggerOption struct {
-	IPAddress *IPAddressOption `yaml:"ipAddress"`
+	IPAddress *IPAddressOption `omitempty,yaml:"ipaddress"`
+	Xrandr    *XrandrOption    `omitempty,yaml:"xrandr"`
 }
 
 type IPAddressOption struct {
@@ -37,4 +38,9 @@ type IPAddressOption struct {
 type IPAddress struct {
 	Address string `yaml:"address"`
 	Key     int    `yaml:"key"`
+}
+
+type XrandrOption struct {
+	ConnectedCount int      `omitempty,yaml:"connectedCount"`
+	Screens        []string `omitempty,yaml:"screens"`
 }

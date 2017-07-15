@@ -9,9 +9,9 @@ import (
 // Read config file by filename and returns Config
 func Read(filename string) (*Config, error) {
 	config := &Config{
-		PollerOptions: PollerOptions{
-			PollInterval: 3,
-			Timeout:      3,
+		PollerConfig: PollerConfig{
+			PollInterval: "2s",
+			Timeout:      "3s",
 		},
 	}
 
