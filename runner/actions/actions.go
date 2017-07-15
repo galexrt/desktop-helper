@@ -40,7 +40,7 @@ func (mgr *Manager) newAction(name string) (Action, error) {
 	ctor, ok := constructors[name]
 	mgr.Mutex.Unlock()
 	if !ok {
-		return nil, fmt.Errorf("trigger with name '%s' not found.", name)
+		return nil, fmt.Errorf("action with name '%s' not found.", name)
 	}
 	trg, err := ctor(mgr.config)
 	if err != nil {

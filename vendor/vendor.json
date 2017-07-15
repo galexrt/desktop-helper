@@ -16,6 +16,18 @@
 			"revisionTime": "2017-01-30T11:31:45Z"
 		},
 		{
+			"checksumSHA1": "xo5L4awJDBwNMCIfhEJr/9kR5wQ=",
+			"path": "github.com/mattn/go-gtk/glib",
+			"revision": "74b90dc4024fbab133ae97b5e9224e2d6f25ac7a",
+			"revisionTime": "2017-07-14T02:00:55Z"
+		},
+		{
+			"checksumSHA1": "TwbVDVhLZbjHkVzDVChKj0k94VE=",
+			"path": "github.com/mqu/go-notify",
+			"revision": "ef6f6f49d093be44ff1ec9879b1a7173b8bce2c6",
+			"revisionTime": "2013-07-19T19:40:48Z"
+		},
+		{
 			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
 			"path": "github.com/pmezard/go-difflib/difflib",
@@ -27,6 +39,12 @@
 			"path": "github.com/prometheus/common/log",
 			"revision": "9e0844febd9e2856f839c9cb974fbd676d1755a8",
 			"revisionTime": "2017-04-18T15:52:10Z"
+		},
+		{
+			"checksumSHA1": "NtfyiGLgSvYe/PBesqhgjdHo6X8=",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "51dc0fc64317a2861273909081f9c315786533eb",
+			"revisionTime": "2017-07-13T11:57:24Z"
 		},
 		{
 			"checksumSHA1": "8rxOh1Vlti1bzoIy6mH5eL0RYsI=",

@@ -15,9 +15,16 @@ profiles:
   onEnable:
     exec:
       command: "/bin/echo HELLO WORLD!"
+    libnotify:
+      delay: "5s"
+      message: "Profile enabled: home"
   onDisable:
     exec:
       command: "/bin/echo GOODBYE WORLD!"
+    libnotify:
+      delay: "5s"
+      message: "Profile disabled: home"
+      urgency: 2
   trigger:
     ipAddress:
       addresses:

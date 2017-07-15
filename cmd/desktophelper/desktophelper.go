@@ -18,6 +18,7 @@ import (
 	_ "github.com/galexrt/desktop-helper/poller/triggers/ipaddress"
 	// Actions
 	_ "github.com/galexrt/desktop-helper/runner/actions/exec"
+	_ "github.com/galexrt/desktop-helper/runner/actions/libnotify"
 )
 
 var (
