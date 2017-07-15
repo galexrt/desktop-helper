@@ -8,6 +8,7 @@ machine:
 
 dependencies:
   override:
+    - sudo apt-get update; sudo apt-get install -y libnotify-dev
     - mkdir -p ${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME} ${HOME}/${CIRCLE_PROJECT_REPONAME}/output
     - ln -fs ${HOME}/${CIRCLE_PROJECT_REPONAME} ${HOME}/.go_workspace/src/github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
     - go get -u github.com/kardianos/govendor
