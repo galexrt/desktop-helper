@@ -13,7 +13,8 @@ type ActionOption struct {
 }
 
 type ExecOption struct {
-	Command string `yaml:"command"`
+	Command string   `yaml:"command"`
+	Args    []string `yaml:"args"`
 }
 
 type LibnotifyOption struct {

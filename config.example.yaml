@@ -16,13 +16,17 @@ profiles:
 - name: home
   onenable:
     exec:
-      command: "/bin/echo HELLO WORLD!"
+      command: /bin/echo
+      args:
+        - HELLO WORLD!
     libnotify:
       delay: "5s"
       message: "Profile enabled: home"
   ondisable:
     exec:
-      command: "/bin/echo GOODBYE WORLD!"
+      command: /bin/echo
+      args:
+        - "GOODBYE WORLD!"
     libnotify:
       delay: "5s"
       message: "Profile disabled: home"
@@ -41,7 +45,9 @@ profiles:
       command: "/bin/echo HELLO WORLD 2!"
   ondisable:
     exec:
-      command: "/bin/echo GOODBYE WORLD 2!"
+      command: /bin/echo
+      args:
+        - "GOODBYE WORLD 2!"
   trigger:
     ipaddress:
       addresses:

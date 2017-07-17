@@ -27,16 +27,13 @@ func New(cfg config.ActionsConfig) (actions.Action, error) {
 }
 
 func (exe *Action) Execute(opts config.ActionOption) error {
-	parts := strings.Fields(opts.Exec.Command)
-	command := parts[0]
-	parts = parts[1:len(parts)]
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	var cmd *exec.Cmd
-	if len(command) > 1 {
-		cmd = exec.CommandContext(ctx, command, parts...)
+	if len(opts.Exec.Args) > 0 {
+		cmd = exec.CommandContext(ctx, opts.Exec.Command, opts.Exec.Args...)
 	} else {
-		cmd = exec.CommandContext(ctx, command, "")
+		cmd = exec.CommandContext(ctx, opts.Exec.Command, "")
 	}
 	out, err := cmd.CombinedOutput()
 	log.WithField("action", "exec").WithField("cmd", opts.Exec.Command).
