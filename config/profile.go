@@ -41,6 +41,6 @@ type IPAddress struct {
 }
 
 type XrandrOption struct {
-	ConnectedCount int      `omitempty,yaml:"connectedcount"`
+	ConnectedCount *int     `omitempty,yaml:"connectedcount"`
 	Screens        []string `omitempty,yaml:"screens"`
 }

@@ -1,16 +1,16 @@
 ---
 version: "1"
-pollerConfig:
+pollerconfig:
   pollInterval: "3s"
   timeout: "5s"
-triggersConfig:
+triggersconfig:
   ipaddress:
     interfaces:
     - enp0s31f6
     - wlp1s0
   xrandr:
     xauthoritiy: /home/atrost/.Xauthoritiy
-actionsConfig:
+actionsconfig:
   exec: {}
 profiles:
 - name: home

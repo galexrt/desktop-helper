@@ -66,7 +66,7 @@ func (trg *Trigger) GetState() error {
 
 func (trg *Trigger) Match(opts config.TriggerOption) (bool, error) {
 	var match bool
-	if trg.state.ConnectedCount == opts.Xrandr.ConnectedCount {
+	if opts.Xrandr.ConnectedCount != nil && *opts.Xrandr.ConnectedCount == trg.state.ConnectedCount {
 		match = true
 	}
 	if len(trg.state.List) == len(opts.Xrandr.Screens) {
