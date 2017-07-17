@@ -5,8 +5,8 @@ Description=galexrt/desktop-helper
 Type=simple
 ExecStart=/usr/local/bin/desktop-helper \
     -config %h/.desktop-helper/config.yaml
-Restart=Always
-RestartSec=15s
+Restart=always
+RestartSec=5s
 
 [Install]
 WantedBy=default.target
