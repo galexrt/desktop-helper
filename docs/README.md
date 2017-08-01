@@ -1,1 +1,1 @@
-/home/atrost/Projects/galexrt/desktop-helper/README.md
+../README.md
