@@ -1,16 +1,16 @@
 ---
 version: "1"
-pollerConfig:
+pollerconfig:
   pollInterval: "3s"
   timeout: "5s"
-triggersConfig:
+triggersconfig:
   ipaddress:
     interfaces:
     - enp0s31f6
     - wlp1s0
   xrandr:
     xauthoritiy: /home/atrost/.Xauthoritiy
-actionsConfig:
+actionsconfig:
   exec: {}
 profiles:
 # profile: home
@@ -18,8 +18,11 @@ profiles:
   # waht to run when the profile is enabled
   onenable:
     exec:
-      # the commands to run
-      command: "/bin/echo HELLO WORLD!"
+      # the command to run
+      command: /bin/echo
+      # the arguments to add to the command
+      args:
+        - HELLO WORLD!
     # send a notification using libnotify
     libnotify:
       delay: "5s"
@@ -27,8 +30,11 @@ profiles:
       message: "home"
   ondisable:
     exec:
-      # the commands to run
-      command: "/bin/echo GOODBYE WORLD!"
+      # the command to run
+      command: /bin/echo
+      # the arguments to add to the command
+      args:
+        - HELLO WORLD!
     # send a notification using libnotify
     libnotify:
       delay: "5s"
@@ -51,8 +57,14 @@ profiles:
       command: "/bin/echo HELLO WORLD 2!"
   ondisable:
     exec:
+<<<<<<< HEAD
       # the commands to run
       command: "/bin/echo GOODBYE WORLD 2!"
+=======
+      command: /bin/echo
+      args:
+        - "GOODBYE WORLD 2!"
+>>>>>>> c043a5178fb73a42c9789472cff82ae579c52a4b
   trigger:
     ipaddress:
       addresses:

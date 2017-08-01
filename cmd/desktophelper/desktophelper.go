@@ -34,12 +34,17 @@ func init() {
 
 func main() {
 	flag.Parse()
-	cfg, _ := config.Read(configFilename)
+	cfg, err := config.Read(configFilename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if debug {
 		log.SetLevel(log.DebugLevel)
 		printed, _ := yaml.Marshal(cfg)
 		fmt.Printf("%+v\n", string(printed))
 	}
+
 	poller, err := poller.New(cfg)
 	if err != nil {
 		log.Fatal(err)

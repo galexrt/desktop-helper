@@ -13,7 +13,8 @@ type ActionOption struct {
 }
 
 type ExecOption struct {
-	Command string `yaml:"command"`
+	Command string   `yaml:"command"`
+	Args    []string `yaml:"args"`
 }
 
 type LibnotifyOption struct {
@@ -41,6 +42,6 @@ type IPAddress struct {
 }
 
 type XrandrOption struct {
-	ConnectedCount int      `omitempty,yaml:"connectedcount"`
+	ConnectedCount *int     `omitempty,yaml:"connectedcount"`
 	Screens        []string `omitempty,yaml:"screens"`
 }

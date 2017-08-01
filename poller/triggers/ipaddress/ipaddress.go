@@ -30,12 +30,14 @@ func New(cfg config.TriggersConfig) (triggers.Trigger, error) {
 }
 
 func (trg *Trigger) GetState() error {
-	for _, iface := range trg.cfg.Interfaces {
-		addr, err := net.InterfaceByName(iface)
-		if err != nil {
-			return err
+	if trg.cfg != nil {
+		for _, iface := range trg.cfg.Interfaces {
+			addr, err := net.InterfaceByName(iface)
+			if err != nil {
+				return err
+			}
+			trg.state[iface] = *addr
 		}
-		trg.state[iface] = *addr
 	}
 	return nil
 }
