@@ -13,21 +13,30 @@ triggersConfig:
 actionsConfig:
   exec: {}
 profiles:
+# profile: home
 - name: home
+  # waht to run when the profile is enabled
   onenable:
     exec:
+      # the commands to run
       command: "/bin/echo HELLO WORLD!"
+    # send a notification using libnotify
     libnotify:
       delay: "5s"
-      message: "Profile enabled: home"
+      title: "Profile enabled"
+      message: "home"
   ondisable:
     exec:
+      # the commands to run
       command: "/bin/echo GOODBYE WORLD!"
+    # send a notification using libnotify
     libnotify:
       delay: "5s"
-      message: "Profile disabled: home"
+      title: "Profile disabled"
+      message: "home"
       urgency: 2
   trigger:
+    # ipaddress trigger
     ipaddress:
       addresses:
         enp0s31f6:
@@ -38,9 +47,11 @@ profiles:
 - name: test
   onenable:
     exec:
+      # the commands to run
       command: "/bin/echo HELLO WORLD 2!"
   ondisable:
     exec:
+      # the commands to run
       command: "/bin/echo GOODBYE WORLD 2!"
   trigger:
     ipaddress:
