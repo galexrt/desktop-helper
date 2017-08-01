@@ -57,14 +57,10 @@ profiles:
       command: "/bin/echo HELLO WORLD 2!"
   ondisable:
     exec:
-<<<<<<< HEAD
       # the commands to run
-      command: "/bin/echo GOODBYE WORLD 2!"
-=======
       command: /bin/echo
       args:
         - "GOODBYE WORLD 2!"
->>>>>>> c043a5178fb73a42c9789472cff82ae579c52a4b
   trigger:
     ipaddress:
       addresses:
