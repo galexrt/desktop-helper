@@ -1,4 +1,4 @@
-# Profile Triggers
+# Triggers
 Triggers that cause a profile to be matched, and enabled and disabled.
 
 ## IPAddress

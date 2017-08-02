@@ -1,4 +1,4 @@
-# Profile Actions
+# Actions
 Actions are run when specified when a profile is enabled and disabled.
 
 > **NOTE** The ident varies depending on where it is used in the config, in the examples provided below!
