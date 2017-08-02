@@ -26,7 +26,6 @@ type LibnotifyOption struct {
 }
 
 // TRIGGER OPTIONS ===============
-
 type TriggerOption struct {
 	IPAddress *IPAddressOption `omitempty,yaml:"ipaddress"`
 	Xrandr    *XrandrOption    `omitempty,yaml:"xrandr"`
