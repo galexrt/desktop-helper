@@ -1,6 +1,8 @@
 # desktop-helper
 A program to automatically switch your screen configurations and/or execute commands on location (network, screen, docked) changes.
 
+The documentation can be found on the ReadTheDocs here: http://desktop-helper.readthedocs.io/en/latest/
+
 ## Installation
 To install the binary run the following command as root (sudo) to put into the `/usr/local/bin` directory:
 ```
